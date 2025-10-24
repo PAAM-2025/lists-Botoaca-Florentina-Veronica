@@ -33,8 +33,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.lists.ComposeActivity.Companion.EXTRA_TEXT
+import androidx.activity.ComponentActivity
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
     private val chiuitListState = mutableStateOf(ChiuitStore.getAllData())
 
 
@@ -57,6 +60,14 @@ class MainActivity : AppCompatActivity() {
         Surface(color = Color.White) {
             Box(modifier = Modifier.fillMaxSize()) {
                 // TODO 5: Use a vertical list that composes and displays only the visible items.
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(chiuitListState.value) { chiuit ->
+                        ChiuitListItem(chiuit = chiuit)
+                    }
+                }
+
                 // TODO 6: Make use of Compose DSL to describe the content of the list and make sure
                 // to instantiate a [ChiuitListItem] for every item in [chiuitListState.value].
                 FloatingActionButton(
@@ -103,7 +114,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-    Defines text sharing/sending *implicit* intent, opens the application chooser menu,
+    Defines text sharing/sending implicit intent, opens the application chooser menu,
     and starts a new activity which supports sharing/sending text.
      */
     private fun shareChiuit(text: String) {
@@ -120,14 +131,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-    Defines an *explicit* intent which will be used to start ComposeActivity.
+    Defines an explicit intent which will be used to start ComposeActivity.
      */
     private fun composeChiuit() {
-            val intent = Intent(this, ComposeActivity::class.java).apply {
-                // Attach extra text data
-                putExtra(Intent.EXTRA_TEXT, "")
-                type = "text/plain"
-            }
+        val intent = Intent(this, ComposeActivity::class.java).apply {
+            // Attach extra text data
+            putExtra(Intent.EXTRA_TEXT, "")
+            type = "text/plain"
+        }
 
         resultLauncher.launch(intent)
 
@@ -138,8 +149,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun setChiuitText(resultText: String?) {
         // TODO 7: Check if text is not null or empty, instantiate a new chiuit object
-
         //  then add it to the [chiuitListState.value].
+        
+        if (!resultText.isNullOrEmpty()) {
+            val newChiuit = Chiuit(description = resultText)
+            chiuitListState.value = chiuitListState.value + newChiuit
+        }
 
     }
 
@@ -149,5 +164,3 @@ class MainActivity : AppCompatActivity() {
         HomeScreen()
     }
 }
-
-
